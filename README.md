@@ -18,6 +18,12 @@
 - **动作面板**：长按她弹出悬浮面板，按分类挑动作，不进入 App
 - **聊天与记忆**：接 API 或本地模型，长期记忆存在本地
 
+## 下载
+
+已发布的安装包见 [Releases](https://github.com/luoyushanghua/whale-pet/releases)：
+`whale-pet-1.0.0.apk`（175 MB，Android 8.0+）
+
+安装后首次启动需授予「显示在其他应用上层」权限，然后点「召唤她出来」。
 ## 构建
 
 ```bash
@@ -40,7 +46,7 @@ gradle assembleDebug
 ## 致谢
 
 - 形象原型：**溟月** / 上善无形（CC BY-NC-SA 4.0）
-- 动作素材：**PC2005-cloud/dsh-pet**（AI 生成，禁止商用）
+- 动作素材：**PC2005-cloud/dsh-pet**（允许开源使用，禁止商用）
 - 设计参考：dsh-pet 的动画链与动作分类
 
 ## 许可证
