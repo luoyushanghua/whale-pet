@@ -292,3 +292,50 @@ Invoke-RestMethod -Uri $url -Method Patch -Headers $h `
 - 个人学习作品，**不商用**
 
 详见仓库 `NOTICE`。
+---
+
+## 12. 版本号与发版（重要）
+
+### 每次发版必须同时升两个号
+
+```kotlin
+versionCode = 3          // 每次 +1，不能重复
+versionName = "1.0.2"    // 展示给用户
+```
+
+**不升会怎样**
+
+| 漏了 | 后果 |
+|---|---|
+| versionName 不变 | App 里的「检查更新」认为没新版，不弹提示 |
+| versionCode 不变 | 部分机型的安装器拒绝覆盖，提示「应用未安装」 |
+
+### 用户数据会不会丢
+
+| 操作 | 设置 / 聊天记忆 / 心情 |
+|---|---|
+| `install -r` 覆盖安装 | **保留** |
+| 应用商店更新 | **保留** |
+| 卸载再装 | 清空 |
+| 换签名重装 | 必须先卸载 → 清空 |
+
+所以只要**不卸载**，升级不丢数据。
+
+### 一键发版
+
+```powershell
+cd D:\WhalePet
+.\scripts\release.ps1                 # 升 patch 并发 GitHub Release
+.\scripts\release.ps1 -Minor          # 升 minor
+.\scripts\release.ps1 -NoUpload       # 只升号+编译+更新桌面
+.\scripts\release.ps1 -Notes "修复…"   # 自定义 Release 说明
+```
+
+脚本会依次做：读版本 → 升号 → 编译 → 提交推送 → 更新桌面包 → 建 Release → 上传 APK。
+
+### 更新检测在哪
+
+`Update.java`：启动时请求
+`api.github.com/repos/luoyushanghua/whale-pet/releases/latest`，
+比对 `BuildConfig.VERSION_NAME`，有新版弹窗（去下载 / 以后再说）。
+无网、超时、解析失败都静默跳过。
