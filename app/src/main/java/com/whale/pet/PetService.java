@@ -708,6 +708,7 @@ public class PetService extends Service implements PetOverlayView.DragListener {
 
     private PetPanel panel;
     private boolean hidePanelForRotation;
+    private long lastPlaySelectedAt;
     private long lastPowerAt;
     private long lastHappyAt;
     private long lastTapAt;
@@ -879,6 +880,9 @@ public class PetService extends Service implements PetOverlayView.DragListener {
     // 悬浮动作面板：不启动 Activity，像它自己的气泡一样贴在底部
     /** 面板/广播选的动作统一走这里：先保证她在，再播 */
     private void playSelected(String nm) {
+        long t = SystemClock.uptimeMillis();
+        if (t - lastPlaySelectedAt < 300) return;   // 连点去抖：太快连点会把播放器搞坏
+        lastPlaySelectedAt = t;
         if (uiHidden || hiddenForGame) {
             uiHidden = false;
             hiddenForGame = false;

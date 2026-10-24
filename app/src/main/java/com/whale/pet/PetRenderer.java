@@ -113,6 +113,8 @@ public class PetRenderer implements GLSurfaceView.Renderer,
     private String currentAction = "";
     private int texFrames;
     private int retryCount;
+    private Runnable pendingChain;
+    private int playFailRetry;
     private int actionToken;
 
     private volatile long ambientMinMs = 20000L;
@@ -290,7 +292,7 @@ public class PetRenderer implements GLSurfaceView.Renderer,
             player.start();
             currentAction = action;
 
-            main.removeCallbacksAndMessages(null);
+            if (pendingChain != null) { main.removeCallbacks(pendingChain); pendingChain = null; }
             if (!loop) {
                 int dur = Math.max(600, player.getDuration() - 90);
                 main.postDelayed(() -> {
@@ -319,6 +321,13 @@ public class PetRenderer implements GLSurfaceView.Renderer,
         } catch (Exception e) {
             currentAction = "";
             android.util.Log.e("whalepet", "play failed: " + action + " -> " + e);
+            try { if (player != null) player.release(); } catch (Exception ignored) { }
+            player = null;
+            if (playFailRetry < 2) {
+                playFailRetry++;
+                final String a = action; final boolean l = loop; final float rr = rate;
+                main.postDelayed(() -> view.queueEvent(() -> play(a, l, rr)), 200);
+            }
         }
     }
 
