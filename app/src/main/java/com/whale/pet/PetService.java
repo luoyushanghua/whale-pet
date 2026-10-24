@@ -443,6 +443,9 @@ public class PetService extends Service implements PetOverlayView.DragListener {
             } catch (Exception ignored) {
             }
             petView.onResumeRenderer();
+            // 从隐藏恢复时播放器可能停在某一帧：补一个待机动作把动画链接上，
+            // 否则表现就是「用了一个动作、回到桌面后卡住不动」
+            petView.playOnce("idle");
             if (prefs.interactive()) enableTouchLayer();
             return;
         }
