@@ -134,29 +134,7 @@ public class PetService extends Service implements PetOverlayView.DragListener {
                     applyFps();
                 } else if (ACTION_PLAY.equals(action)) {
                     String nm = intent.getStringExtra("name");
-                    if (nm != null) {
-                        // 在 App 里选的动作，回到桌面才看得到：先把窗口恢复出来
-                        if (uiHidden || hiddenForGame) {
-                            uiHidden = false;
-                            hiddenForGame = false;
-                            try {
-                                showPet();
-                            } catch (Exception ignored) {
-                            }
-                        }
-                        if (petView != null) {
-                            try {
-                                petView.onResumeRenderer();
-                            } catch (Exception ignored) {
-                            }
-                            // 延后 400ms：等面板关闭触发的 UI_CLOSE / idle 重播走完，
-                            // 否则刚选的动作会被待机动画立刻覆盖（表现为"点了没反应"）
-                            final String act = nm;
-                            handler.postDelayed(() -> {
-                                if (petView != null) petView.playOnce(act);
-                            }, 400);
-                        }
-                    }
+                    if (nm != null) playSelected(nm);
                 } else if (ACTION_NOTIFY.equals(action)) {
                     String t = intent.getStringExtra("text");
                     if (t != null && petView != null && !uiHidden && !hiddenForGame) {
@@ -377,8 +355,9 @@ public class PetService extends Service implements PetOverlayView.DragListener {
         int h = Math.round(w * 720f / 960f);
         lp.width = w;
         lp.height = h;
-        lp.x = screenW - w - dp(6);
-        lp.y = Math.max(0, screenH - h - dp(10));
+        // 召唤出来先放屏幕正中间：贴边容易被手势返回/最近任务划走
+        lp.x = (screenW - w) / 2;
+        lp.y = Math.max(dp(70), (screenH - h) / 2);
     }
 
     private void startAsForeground() {
@@ -445,8 +424,7 @@ public class PetService extends Service implements PetOverlayView.DragListener {
         if (wm == null) {
             wm = (WindowManager) getSystemService(WINDOW_SERVICE);
             if (wm == null) return;
-            DisplayMetrics dm = new DisplayMetrics();
-            wm.getDefaultDisplay().getRealMetrics(dm);
+            DisplayMetrics dm = getResources().getDisplayMetrics();
             screenW = dm.widthPixels;
             screenH = dm.heightPixels;
         }
@@ -879,14 +857,34 @@ public class PetService extends Service implements PetOverlayView.DragListener {
         }
     }
     // 悬浮动作面板：不启动 Activity，像它自己的气泡一样贴在底部
+    /** 面板/广播选的动作统一走这里：先保证她在，再播 */
+    private void playSelected(String nm) {
+        if (uiHidden || hiddenForGame) {
+            uiHidden = false;
+            hiddenForGame = false;
+            try {
+                showPet();
+            } catch (Exception ignored) {
+            }
+        }
+        if (petView == null) return;
+        try {
+            petView.onResumeRenderer();
+        } catch (Exception ignored) {
+        }
+        final String act = nm;
+        handler.postDelayed(() -> {
+            if (petView != null) petView.playOnce(act);
+        }, 250);
+    }
+
     private void togglePanel() {
         if (panel == null) {
             panel = new PetPanel(this, new PetPanel.Listener() {
                 @Override
                 public void onPlay(String action) {
-                    sendBroadcast(new Intent(ACTION_PLAY)
-                            .setPackage(getPackageName())
-                            .putExtra("name", action));
+                    // 直接调用，少一层广播，点一下必定触发
+                    playSelected(action);
                 }
 
                 @Override

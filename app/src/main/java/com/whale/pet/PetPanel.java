@@ -221,7 +221,7 @@ LinearLayout box = new LinearLayout(ctx);
                 row = new LinearLayout(ctx);
                 row.setOrientation(LinearLayout.HORIZONTAL);
                 LinearLayout.LayoutParams rp = new LinearLayout.LayoutParams(
-                        ViewGroup.LayoutParams.MATCH_PARENT, dp(36));
+                        ViewGroup.LayoutParams.MATCH_PARENT, dp(46));
                 rp.topMargin = dp(6);
                 grid.addView(row, rp);
             }
@@ -230,7 +230,7 @@ LinearLayout box = new LinearLayout(ctx);
     }
 
     private View item(String action) {
-        TextView t = Ui.text(ctx, action, 10, 0xFF12405F);
+        TextView t = Ui.text(ctx, action, 11, 0xFF12405F);
         t.setGravity(Gravity.CENTER);
         GradientDrawable bg = new GradientDrawable();
         bg.setColor(0xCCFFFFFF);
