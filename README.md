@@ -21,8 +21,8 @@
 ## 构建
 
 ```bash
-# 需要 JDK 21 + Android SDK 35
-./gradlew assembleDebug
+# 需要 JDK 21 + Android SDK 35 + Gradle 8.9
+gradle assembleDebug
 ```
 
 ⚠️ **仓库不含动作素材**（见 NOTICE）。从源码构建前，需要自行准备
