@@ -138,7 +138,8 @@ public class MainActivity extends Activity {
                 askOverlay();
                 return;
             }
-            startPetService();
+            Update.check(this);
+        startPetService();
         });
         LinearLayout.LayoutParams summonLp = new LinearLayout.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT, dp(50));
@@ -328,7 +329,8 @@ public class MainActivity extends Activity {
         scroll.addView(root);
         setContentView(screen);
         if (!PetService.running && prefs.wasRunning() && Settings.canDrawOverlays(this)) {
-            startPetService();
+            Update.check(this);
+        startPetService();
         }
         refreshFooter(usageLabel);
     }
