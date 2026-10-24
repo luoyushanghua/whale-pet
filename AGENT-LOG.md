@@ -258,6 +258,30 @@ curl.exe --ssl-no-revoke -X POST `
 
 ⚠️ 素材文件名不要用中文传给 upload API，会被截断成 `-1.0.0.apk`。
 
+### ⚠️ 中文编码坑（必看）
+
+用 PowerShell 发 JSON 到 GitHub API 时，**中文会变成 `???`**，原因：
+`Invoke-RestMethod` 默认按 ISO-8859-1 发送字符串，UTF-16 的中文全部丢失。
+
+**必须显式转 UTF-8 字节 + 声明 charset**：
+
+```powershell
+$body  = @{ name = "中文标题"; body = "中文正文" } | ConvertTo-Json -Depth 3
+$bytes = [Text.Encoding]::UTF8.GetBytes($body)          # ← 关键
+Invoke-RestMethod -Uri $url -Method Patch -Headers $h `
+  -Body $bytes -ContentType "application/json; charset=utf-8"
+```
+
+对比一下哪些路径**不会**出问题：
+
+| 上传方式 | 中文是否安全 |
+|---|---|
+| `git push`（README/代码） | ✅ 安全，走字节流 |
+| Contents API（内容走 Base64） | ✅ 安全 |
+| Release / Issue 的 JSON 字段 | ❌ **必须先转 UTF-8 字节** |
+
+已经踩过一次：v1.0.0 的 Release 标题和正文全是 `?????`，后来用 PATCH 重发才修好。
+
 ---
 
 ## 11. 版权（必须保留）
