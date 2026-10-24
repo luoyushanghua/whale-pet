@@ -54,7 +54,9 @@ public class AwayAppsActivity extends Activity {
         root.addView(countLabel, clp);
 
         ListView list = new ListView(this);
-        list.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE);
+        // 不用 CHOICE_MODE_MULTIPLE：ListView 自己也会改选中态，和我们的 checked 列表打架，
+        // 表现就是「勾了保存后回来看着像没勾，要点两次才能取消」
+        list.setChoiceMode(ListView.CHOICE_MODE_NONE);
         list.setBackgroundColor(0x00000000);
         list.setDivider(null);
         list.setDividerHeight(Ui.dp(this, 8));

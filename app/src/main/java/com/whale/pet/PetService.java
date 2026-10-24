@@ -587,7 +587,13 @@ public class PetService extends Service implements PetOverlayView.DragListener {
                 posY = lp.y;
                 wm.updateViewLayout(petView, lp);
             }
-            if (panel != null) panel.relayout();
+            // 旋转后旧面板的方向是错的（会躺倒），直接收起来，用户重新长按即可
+            if (panel != null && panel.isShowing()) {
+                panel.hide();
+                hidePanelForRotation = true;
+            } else if (panel != null) {
+                panel.relayout();
+            }
         } catch (Exception ignored) {
         }
     }
@@ -703,6 +709,7 @@ public class PetService extends Service implements PetOverlayView.DragListener {
     }
 
     private PetPanel panel;
+    private boolean hidePanelForRotation;
     private long lastPowerAt;
     private long lastHappyAt;
     private long lastTapAt;
