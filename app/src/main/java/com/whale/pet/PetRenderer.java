@@ -112,6 +112,7 @@ public class PetRenderer implements GLSurfaceView.Renderer,
 
     private String currentAction = "";
     private int texFrames;
+    private int retryCount;
     private int actionToken;
 
     private volatile long ambientMinMs = 20000L;
@@ -226,7 +227,17 @@ public class PetRenderer implements GLSurfaceView.Renderer,
     }
 
     public void play(final String action, final boolean loop, final float rate) {
-        if (!running || st == null) return;
+        // 恢复显示时 GL 线程/纹理可能还没就绪，直接 return 会永远停住
+        // （表现为「用了一个动作、回到桌面后卡死」）。这里改成有限次重试。
+        if (!running || st == null) {
+            if (st == null && retryCount < 20) {
+                retryCount++;
+                android.util.Log.d("whalepet", "play deferred " + action + " st=null retry=" + retryCount);
+                main.postDelayed(() -> view.queueEvent(() -> play(action, loop, rate)), 250);
+            }
+            return;
+        }
+        retryCount = 0;
         final int token = ++actionToken;
         try {
             if (player == null) {
