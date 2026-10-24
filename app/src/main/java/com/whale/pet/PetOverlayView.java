@@ -77,6 +77,17 @@ public class PetOverlayView extends GLSurfaceView {
         renderer.begin();
     }
 
+    /** 隐藏（离场/切走）时：停重绘 + 暂停播放，但保留播放器与纹理 */
+    public void hidePause() {
+        setRenderMode(RENDERMODE_WHEN_DIRTY);
+        renderer.pausePlayer();
+    }
+
+    /** 回来时：恢复重绘 + 续播 */
+    public void hideResume() {
+        setRenderMode(RENDERMODE_CONTINUOUSLY);
+        renderer.resumePlayer();
+    }
     public void onPauseRenderer() {
         renderer.end();
         onPause();

@@ -146,6 +146,29 @@ public class PetRenderer implements GLSurfaceView.Renderer,
         view.requestRender();
     }
 
+    /** 隐藏时只暂停播放，不释放：释放后纹理可能失效，回来就再也播不动 */
+    public void pausePlayer() {
+        view.queueEvent(() -> {
+            try {
+                if (player != null && player.isPlaying()) player.pause();
+            } catch (Exception ignored) {
+            }
+        });
+    }
+
+    /** 恢复播放：优先续播，播放器不在了就重新起待机 */
+    public void resumePlayer() {
+        view.queueEvent(() -> {
+            try {
+                if (player != null) {
+                    player.start();
+                    return;
+                }
+            } catch (Exception ignored) {
+            }
+            play(IDLE, true);
+        });
+    }
     public void end() {
         running = false;
         runningAnim = false;
