@@ -1,0 +1,21 @@
+NOTICE — 素材与形象声明
+
+本仓库的代码以 MIT 许可证发布，但以下内容不属于 MIT 授权范围：
+
+1. 动作素材（app/src/main/assets/actions/*.mp4）
+   来源：PC2005-cloud/dsh-pet
+         https://github.com/PC2005-cloud/dsh-pet
+   AI 生成，原作者声明「禁止商用」。本仓库不包含这些文件；
+   如需构建完整 APK，请自行从上述仓库获取源素材并按 HANDOFF 中的
+   双解码流程转码。
+
+2. 角色形象「溟月」
+   作者：上善无形
+   许可：CC BY-NC-SA 4.0
+   本项目使用的形象为其二创版本，禁止商用；转载、修改需署名并以相同
+   许可证分发。
+
+3. 语音与音效（app/src/main/assets/voice、app/src/main/assets/sfx）
+   由本项目自行制作 / 用 ffmpeg 合成，随代码一同以 MIT 发布。
+
+联系方式：GitHub @luoyushanghua

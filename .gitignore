@@ -1,0 +1,19 @@
+# Android
+*.iml
+.gradle/
+local.properties
+.idea/
+.DS_Store
+build/
+captures/
+.externalNativeBuild/
+.cxx/
+*.apk
+*.aab
+
+# 素材不进仓库（版权归原作者，见 NOTICE）
+app/src/main/assets/actions/
+
+# 本地模型 / 调试产物
+*.log
+work/
