@@ -349,6 +349,21 @@ public class PetService extends Service implements PetOverlayView.DragListener {
         }
     }
 
+    /** 窗口坐标空间里的屏幕尺寸（别用 DisplayMetrics，某些模拟器/分屏会给错） */
+    private void refreshScreenSize() {
+        try {
+            if (Build.VERSION.SDK_INT >= 30 && wm != null) {
+                android.graphics.Rect b = wm.getCurrentWindowMetrics().getBounds();
+                screenW = b.width();
+                screenH = b.height();
+                return;
+            }
+        } catch (Exception ignored) {
+        }
+        android.util.DisplayMetrics dm = getResources().getDisplayMetrics();
+        screenW = dm.widthPixels;
+        screenH = dm.heightPixels;
+    }
     private void resetPosition() {
         if (lp == null) return;
         int w = Math.max(dp(80), Math.round(Math.min(screenW, screenH) * prefs.sizePct() / 100f));
@@ -435,8 +450,10 @@ public class PetService extends Service implements PetOverlayView.DragListener {
             lp.height = petH;
             lp.flags &= ~WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE;
             if (lp.x < 0 || lp.y < 0) {
-                lp.x = screenW - petW - dp(6);
-                lp.y = Math.round(screenH * 0.42f);
+                // 从隐身恢复：跟首次召唤一样放屏幕正中
+                resetPosition();
+                posX = lp.x;
+                posY = lp.y;
             }
             try {
                 wm.updateViewLayout(petView, lp);
